@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD💬</title>
+    <link rel="stylesheet" href="css/text.css">
+</head>
+
+<body>
+    <h1>💌🍰🎇🎉✨</h1>
+
+    <!-- 게시물 작성 폼 -->
+    <h2>축하 한 마디..</h2>
+    <form id="postForm">
+        <label for="title">이름</label><br>
+        <input type="text" id="title" name="title" required placeholder="이름을 입력하세요."><br><br>
+
+        <label for="content">내용</label><br>
+        <textarea id="content" name="content" rows="4" cols="50" required placeholder="내용을 입력하세요."></textarea><br><br>
+
+        <button class="btn" type="submit">등록</button>
+    </form>
+
+    <!-- 게시물 목록 -->
+    <div class="board" id="board">
+        <h2></h2>
+    </div>
+
+    <script>
+        // 로컬 스토리지에서 저장된 게시물 목록을 불러오기
+        function loadPosts() {
+            const storedPosts = localStorage.getItem('posts');
+            return storedPosts ? JSON.parse(storedPosts) : [];
+        }
+
+        // 게시물 목록을 로컬 스토리지에 저장하기
+        function savePosts(posts) {
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+
+        // 게시물 목록을 화면에 표시하는 함수
+        function displayPosts() {
+            const posts = loadPosts();
+            const board = document.getElementById("board");
+            board.innerHTML = "<h2>어쩌고 저쩌고 💬</h2>"; // 제목 초기화
+            posts.forEach((post, index) => {
+                const postElement = document.createElement("div");
+                postElement.classList.add("post");
+                postElement.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p>
+                                         <button class="delete-btn" onclick="deletePost(${index})">삭제</button>`;
+                board.appendChild(postElement);
+            });
+        }
+
+        // 게시물 추가 함수
+        function addPost(title, content) {
+            const posts = loadPosts(); // 기존 게시물 불러오기
+            posts.push({ title, content }); // 새 게시물 추가
+            savePosts(posts); // 로컬 스토리지에 저장
+            displayPosts(); // 화면에 게시물 표시
+        }
+
+        // 게시물 삭제 함수
+        function deletePost(index) {
+            const posts = loadPosts(); // 기존 게시물 불러오기
+            posts.splice(index, 1); // 해당 인덱스의 게시물 삭제
+            savePosts(posts); // 로컬 스토리지에 업데이트된 목록 저장
+            displayPosts(); // 화면에 게시물 목록 다시 표시
+        }
+
+        // 폼 제출 시 게시물 추가
+        document.getElementById("postForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 기본 제출 방지
+
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+
+            // 게시물 추가
+            addPost(title, content);
+
+            // 폼 초기화
+            document.getElementById("title").value = '';
+            document.getElementById("content").value = '';
+        });
+
+        // 페이지 로드 시 게시물 목록 표시
+        window.onload = function () {
+            displayPosts();
+        }
+    </script>
+</body>
+
+</html>
